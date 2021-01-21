@@ -120,3 +120,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# This allows code to load static images in the html quickly
+# Without this, the loading takes a substantially longer time
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
+MEDIA_URL = '/images/'
+
+MEDIA_ROOT = BASE_DIR / 'ycb/static/images'

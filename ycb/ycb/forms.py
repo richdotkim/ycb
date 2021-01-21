@@ -14,3 +14,4 @@ class AddRecipeForm(ModelForm):
         model = Recipe
         fields = '__all__'
         exclude = ['id']
+        

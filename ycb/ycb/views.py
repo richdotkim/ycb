@@ -1,12 +1,20 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm
+from .forms import CreateUserForm, AddRecipeForm
 
 from django.contrib import messages
+from .models import Recipe
+from .filters import RecipeFilter
 
 def home(request):
-    return render (request, 'ycb/home.html')
+    recipes = Recipe.objects.all()
+
+    myFilter = RecipeFilter(request.GET, queryset=recipes)
+    recipes = myFilter.qs
+
+    context = {'recipes':recipes, 'myFilter':myFilter}
+    return render (request, 'ycb/home.html', context)
 
 def registerPage(request):
     form = CreateUserForm()
@@ -35,8 +43,6 @@ def loginPage(request):
             return redirect('home')
         else:
             messages.info(request, 'Username or Password is incorrect')
-            return render(request, 'accounts/login.html', context)
-
 
     context = {}
     return render (request, 'ycb/login.html', context)
@@ -44,3 +50,22 @@ def loginPage(request):
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+def recipe(request, pk):
+    recipe = Recipe.objects.get(id=pk)
+    queryset = Recipe.objects.all()
+
+    context = {'recipe': recipe, 'queryset':queryset}
+    return render(request, 'ycb/recipe.html', context)
+
+def addRecipe(request):
+    form = AddRecipeForm()
+
+    if request.method == 'POST':
+        form = AddRecipeForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+
+    context = {'form':form}
+    return render(request, 'ycb/add_recipe.html', context)
